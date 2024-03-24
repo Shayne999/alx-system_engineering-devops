@@ -1,4 +1,16 @@
 #!/usr/bin/env bash
 # creates an RSA key pair.
 
-ssh-keygen -h 4096 -N betty -f school
+if [ -f "school" ]; then
+    echo "Key pair 'school' already exists. Aborting."
+    exit 1
+fi
+
+ssh-keygen -t rsa -b 4096 -N "betty" -f school
+
+if [ $? -eq 0 ]; then
+    echo "RSA key pair 'school' with 4096 bits has been created and protected by passphrase 'betty'."
+else
+    echo "Failed to create RSA key pair."
+fi
+
