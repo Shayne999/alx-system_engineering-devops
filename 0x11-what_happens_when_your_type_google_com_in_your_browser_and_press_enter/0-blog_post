@@ -1,0 +1,20 @@
+This is an attempt to answer What happens when you type google.com in your browser and press Enter.
+
+Since the domain name is google.com there are no none-ASCII unicode to convert, all the characters are in the supported character ranges: a-z, A-Z, 0-9, -, and .
+The browser will then check if the website is not in the HSTS list. If it is, then the request will be sent via HTTPS instead of HTTP to protect the user from potential threats.
+
+DNS look up. The browser checks if the domain is in its cache. If it is not found in the cache, the browser will perform a look up using the gethostbyname library function. The purpose of using gethostbyname is to check if the hostname can be resolved by reference in the local hosts file before trying to reresolve the hostname through DNS.
+If gethostbyname does not have it cached nor can find it in hosts then a request is made to the DNS server in the network stack to get the IP address linked to the domain name.
+
+Once the browser receives the IP address of the destination server and the port number provided in the URL (if not specified it will default to port 80) it makes a call to the a sysytem library function named socket to request a Transmission Control Protocol (TCP) socket stream.
+The request is first passed to the Transport Layer where TCP segment is crafted. After this, a destination port is a added to the header and a souce port is chosen from the Kernel's dynamic port range. The segment that was crafted is then sent to the Network layer which wraps an additional IP header. The destination server and the current machine's IP addresses are inserted from a packet and the packet next arrives at the Link Layer. A frame header is added that includes the Media Access Control (MAC) address of the machine's Network Interface Card (NIC) as well as the MAC address of the gateway. The packet is now transmited through either ethernet, cellular data network of WiFi. 
+
+If the client is using HTTP protocol, a request is sent to the server. After sending the request, the web browsersends a single blank newline to the server indicating that the content of the request is done. The server responds with a code denoting the status of the request e.g 200 OK, 301 Moved Permanently, 400 Bad Request, 401 Unothorized, 404 Not found, 500 Internal Server etc. In this case we will assume that the response will be 200 Ok.
+The respnse is followed by a newline then the payload of the HTML content of google.com.
+
+HTTP Daemon (HTTPD) servers such as Apache and nginx are responsible for handling request and responses on the server side. The HTTPD recieves the request and breaks it down to the following parameters: HTTP Request method, GET, in this case; Domain, google.com in this case. And the request  path.
+The server then verifies that a virtual host that corresponds to the domain google.com is configured on the server side, verifies that google.com accepts GET requests and verifies that the client is allowed to use this method.
+After these verifications the server will then pull the content that corresponds with with the request and parse the file according to the handler and streams the output to the client.
+
+The browser functions to present web resources you request from the server in the browser window. The resources can be any type of supported content e.g HTML documents, images etc located in the path specified by the user using the Uniform Resource Identifier (URI).
+The interpretation and display of the HTML files is specified in the HTML and CSS specifications.
